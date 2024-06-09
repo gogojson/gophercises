@@ -20,11 +20,11 @@ type pathData struct {
 func MapHandler(pathsToUrls map[string]string, fallback http.Handler) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		path := r.URL.Path
-		for k, v := range pathsToUrls {
-			if path == k {
-				http.Redirect(w, r, v, http.StatusPermanentRedirect)
-				return
-			}
+
+		// Never need to loop through a map to the ID!
+		if dest, ok := pathsToUrls[path]; ok {
+			http.Redirect(w, r, dest, http.StatusPermanentRedirect)
+			return
 		}
 		fallback.ServeHTTP(w, r)
 	}
@@ -51,10 +51,10 @@ func YAMLHandler(yml []byte, fallback http.Handler) (http.HandlerFunc, error) {
 	if err := yaml.Unmarshal(yml, &d); err != nil {
 		return nil, err
 	}
-	dMap := map[string]string{}
+	dMap := make(map[string]string, len(d))
 
-	for i := range d {
-		dMap[d[i].Path] = d[i].Url
+	for _, v := range d {
+		dMap[v.Path] = v.Url
 	}
 	return MapHandler(dMap, fallback), nil
 }
