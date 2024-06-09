@@ -1,4 +1,4 @@
-<h1>{{.PageTitle}}</h1>
+<h1>Create My Own Story</h1>
 <h2>{{.Title}}</h2>
 <h3>Story</h3>
 
@@ -6,10 +6,10 @@
 <p>{{.}}</p>
 {{end}} {{if .Options}}
 <h3>Options</h3>
-{{range .Options}}
-<p>{{.Text}}</p>
-<a href="/{{.Arc}}">{{.Arc}}</a>
-{{end}} {{else}}
-<a href="/">Restart</a>
-
+<ul>
+  {{range .Options}}
+  <li><a href="/{{.Arc}}">{{.Text}}</a></li>
+  {{end}} {{else}}
+  <a href="/">Restart</a>
+</ul>
 {{end}}
