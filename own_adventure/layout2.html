@@ -1,0 +1,15 @@
+<h1>Create My Own Story V2</h1>
+<h2>{{.Title}}</h2>
+<h3>Story</h3>
+
+{{range .Stories}}
+<p>{{.}}</p>
+{{end}} {{if .Options}}
+<h3>Options</h3>
+<ul>
+  {{range .Options}}
+  <li><a href="/story/{{.Arc}}">{{.Text}}</a></li>
+  {{end}} {{else}}
+  <a href="/story/">Restart</a>
+</ul>
+{{end}}
