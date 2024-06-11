@@ -8,9 +8,11 @@ import (
 	"golang.org/x/net/html"
 )
 
+var result = make(map[string]LinkEle)
+
 func main() {
 
-	r, err := os.ReadFile("testFiles/ex1.html")
+	r, err := os.ReadFile("testFiles/ex4.html")
 	if err != nil {
 		panic(err)
 	}
@@ -21,6 +23,14 @@ func main() {
 	}
 
 	htmlLooper(node)
+
+	rList := make([]LinkEle, len(result))
+	i := 0
+	for _, v := range result {
+		rList[i] = v
+		i++
+	}
+	fmt.Printf("%+v\n", rList)
 }
 
 type LinkEle struct {
@@ -29,21 +39,35 @@ type LinkEle struct {
 }
 
 func htmlLooper(n *html.Node) {
-
-	fmt.Println("---------------------------")
-	fmt.Printf("Type %v\n", n.Type)
-	fmt.Printf("Attr %v\n", n.Attr)
-	fmt.Printf("Data %v\n", n.Data)
-	fmt.Printf("Namespace %v\n", n.Namespace)
-	// if n.Type == html.ElementNode {
-	// 	fmt.Printf("Attr %v\n", n.Attr)
-	// 	fmt.Printf("Data %v\n", n.Data)
-	// 	fmt.Printf("Namespace %v\n", n.Namespace)
-
-	// }
+	// fmt.Printf("Namespace %v\n", n.Namespace)
+	// Check if it is an element
+	if n.Type == html.ElementNode && len(n.Attr) != 0 {
+		// Check if it has link
+		for _, v := range n.Attr {
+			if v.Key == "href" {
+				result[v.Val] = LinkEle{Link: v.Val}
+				for c := n.FirstChild; c != nil; c = c.NextSibling {
+					textFinder(c, v.Val)
+				}
+			}
+		}
+	}
 	// if n.Type == html.TextNode
 	for c := n.FirstChild; c != nil; c = c.NextSibling {
 		htmlLooper(c)
+	}
+
+}
+
+func textFinder(n *html.Node, key string) {
+	if n.Type == html.TextNode && n.Data != "" {
+		temp := result[key]
+		temp.Text += strings.TrimSpace(n.Data)
+		result[key] = temp
+	}
+
+	for c := n.FirstChild; c != nil; c = c.NextSibling {
+		textFinder(c, key)
 	}
 
 }
