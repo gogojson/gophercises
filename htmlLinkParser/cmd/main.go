@@ -1,7 +1,9 @@
 package main
 
 import (
+	"flag"
 	"fmt"
+	"io"
 	"os"
 	"strings"
 
@@ -11,8 +13,9 @@ import (
 var result = make(map[string]LinkEle)
 
 func main() {
-
-	r, err := os.ReadFile("testFiles/ex4.html")
+	filePath := flag.String("file", "testFiles/ex2.html", "File path of the HTML file that needs parsing")
+	flag.Parse()
+	r, err := os.ReadFile(*filePath)
 	if err != nil {
 		panic(err)
 	}
@@ -38,6 +41,15 @@ type LinkEle struct {
 	Text string
 }
 
+func parser(r io.Reader) (*html.Node, error) {
+	n, err := html.Parse(r)
+	if err != nil {
+		return nil, err
+	}
+	return n, err
+
+}
+
 func htmlLooper(n *html.Node) {
 	// fmt.Printf("Namespace %v\n", n.Namespace)
 	// Check if it is an element
@@ -56,7 +68,6 @@ func htmlLooper(n *html.Node) {
 	for c := n.FirstChild; c != nil; c = c.NextSibling {
 		htmlLooper(c)
 	}
-
 }
 
 func textFinder(n *html.Node, key string) {
@@ -69,5 +80,4 @@ func textFinder(n *html.Node, key string) {
 	for c := n.FirstChild; c != nil; c = c.NextSibling {
 		textFinder(c, key)
 	}
-
 }
