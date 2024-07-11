@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	"io"
 	"os"
 	"strings"
 
@@ -39,15 +38,6 @@ func main() {
 type LinkEle struct {
 	Link string
 	Text string
-}
-
-func parser(r io.Reader) (*html.Node, error) {
-	n, err := html.Parse(r)
-	if err != nil {
-		return nil, err
-	}
-	return n, err
-
 }
 
 func htmlLooper(n *html.Node) {
